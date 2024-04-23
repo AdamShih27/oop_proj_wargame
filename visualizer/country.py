@@ -3,7 +3,7 @@ from typing import Tuple
 
 
 from visualizer.text_rect import TextRect
-from visualizer.weapons import AnimatedWeapon
+# from visualizer.weapons import AnimatedWeapon
 
 
 RED = pygame.Color(255, 0, 0)
@@ -72,7 +72,7 @@ class Country:
             # Draw nuke images
             pos = nuke_rect.copy()
             pos.topleft = self.border.midbottom
-            for i in range(self.country.nukes):
+            for _ in range(self.country.nukes):
                 window.blit(nuke_image, pos)
                 pos.x += pos.width
 

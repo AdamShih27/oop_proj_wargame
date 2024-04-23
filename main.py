@@ -20,13 +20,18 @@ pygame.display.set_icon(
     pygame.image.load(ICON_PATH).convert_alpha()
 )
 
-from visualizer.weapons import ActiveWeapons
+# from visualizer.weapons import ActiveWeapons
+# from visualizer.explosions import Explosions
+# from visualizer.lasers import Lasers
+# from visualizer.particles import Particles
 from visualizer.countries import Countries
-from visualizer.explosions import Explosions
-from visualizer.lasers import Lasers
-from visualizer.particles import Particles
 from visualizer.shake import Shake
 from visualizer.text_rect import TextRect
+
+from visualizer.weapons import ActiveWeaponSprite
+from visualizer.explosions import ExplosionSprite
+from visualizer.lasers import LaserSprite
+from visualizer.particles import ParticlesSprite
 
 class Game:
     def __init__(self, window: pygame.Surface):
@@ -36,12 +41,14 @@ class Game:
 
         self.game = Engine()
         self.clock = pygame.time.Clock()
-        self.active_weapons = ActiveWeapons()
-        self.explosions = Explosions()
-        self.lasers = Lasers()
-        self.particles = Particles()
+        # self.active_weapons = ActiveWeapons()
+        # self.explosions = Explosions()
+        # self.lasers = Lasers()
+        # self.particles = Particles()
         self.shake = Shake()
         self.timer = time.time()
+        
+        self.all_sprites = pygame.sprite.Group()
 
         self.shake_enabled = True
 
@@ -75,12 +82,14 @@ class Game:
 
             self.window.fill(BACKGROUND_COLOR)
 
-            self.explosions.draw(self.window)
             self.turn_label.draw(self.window)
             self.countries.draw(self.window)
-            self.lasers.draw(self.window)
-            self.active_weapons.draw(self.window)
-            self.particles.draw(self.window, FPS)
+            # self.explosions.draw(self.window)
+            # self.lasers.draw(self.window)
+            # self.active_weapons.draw(self.window)
+            # self.particles.draw(self.window)
+            
+            self.all_sprites.update(self.window)
             
             time_now = time.time()
             
@@ -121,20 +130,24 @@ class Game:
                 end_pos = self.countries.get_pos(event["Target"])
 
                 if event["Weapon"] == Weapons.LASER:
-                    self.lasers.add(start, end_pos, TURN_LENGTH)
+                    # self.lasers.add(start, end_pos, TURN_LENGTH)
+                    self.all_sprites.add(LaserSprite(start, end_pos, TURN_LENGTH))
                 else:
-                    self.active_weapons.add(start, end_pos, event, TURN_LENGTH)
+                    # self.active_weapons.add(start, end_pos, event, TURN_LENGTH)
+                    self.all_sprites.add(ActiveWeaponSprite(start, end_pos, event, TURN_LENGTH))
 
         for event in self.game.events["Death"]:
             end_pos = self.countries.get_pos(event["Target"])
-            self.particles.add(end_pos)
+            # self.particles.add(end_pos)
+            self.all_sprites.add(ParticlesSprite(end_pos) for _ in range(100))
 
         for event in self.game.events["Hit"]:
             if event["Weapon"] == Weapons.NUKE:
                 self.shake.start(40)
 
             pos = self.countries.get_pos(event["Target"])
-            self.explosions.add(pos, event["Weapon"])
+            # self.explosions.add(pos, event["Weapon"])
+            self.all_sprites.add(ExplosionSprite(pos, event["Weapon"]))
 
 def show_results(final):
     size = sum(final.values())

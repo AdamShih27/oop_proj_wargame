@@ -4,58 +4,58 @@ import time
 from typing import Dict, Tuple
 
 from resources import weapons
-from visualizer.collection import Collection
+# from visualizer.collection import Collection
 from visualizer.timer import Timer
 
 
-class AnimatedWeapon:
-    __slots__ = ("start", "end", "rect", "event", "turn_length", "weapon",
-                 "timer", "trail")
+# class AnimatedWeapon:
+#     __slots__ = ("start", "end", "rect", "event", "turn_length", "weapon",
+#                  "timer", "trail")
 
-    def __init__(self, start: Tuple[int, int], end: Tuple[int, int],
-                 event: Dict, turn_length: int):
-        self.start, self.end = start, end
+#     def __init__(self, start: Tuple[int, int], end: Tuple[int, int],
+#                  event: Dict, turn_length: int):
+#         self.start, self.end = start, end
 
-        self.rect = pygame.Rect(0, 0, 10, 10)
-        self.event = event
-        self.turn_length = turn_length
-        self.weapon = event["Weapon"]
+#         self.rect = pygame.Rect(0, 0, 10, 10)
+#         self.event = event
+#         self.turn_length = turn_length
+#         self.weapon = event["Weapon"]
 
-        self.timer = Timer(self.get_max_time())
-        self.trail = Trail(self._get_colour())
+#         self.timer = Timer(self.get_max_time())
+#         self.trail = Trail(self._get_color())
 
-    def get_pos(self):
-        sx, sy = self.start
-        ex, ey = self.end
+#     def get_pos(self):
+#         sx, sy = self.start
+#         ex, ey = self.end
 
-        delta = self.timer.get_delta()
+#         delta = self.timer.get_delta()
 
-        x = sx + (ex - sx) * delta
-        y = sy + (ey - sy) * delta
+#         x = sx + (ex - sx) * delta
+#         y = sy + (ey - sy) * delta
 
-        self.rect.center = x, y
+#         self.rect.center = x, y
 
-    def draw(self, window):
-        dirty_rects = []
+#     def draw(self, window):
+#         dirty_rects = []
 
-        if time.time() > self.timer.start_time:
-            dirty_rects.append(self.rect.copy())
-            dirty_rects.append(self.rect)
+#         if time.time() > self.timer.start_time:
+#             dirty_rects.append(self.rect.copy())
+#             dirty_rects.append(self.rect)
 
-            self.get_pos()
-            window.fill(self._get_colour(), self.rect)
-            dirty_rects += self.trail.draw(window, self.rect.center)
+#             self.get_pos()
+#             window.fill(self._get_color(), self.rect)
+#             dirty_rects += self.trail.draw(window, self.rect.center)
 
-        return dirty_rects
+#         return dirty_rects
 
-    def get_max_time(self):
-        return self.weapon.value.SPEED * self.turn_length
+#     def get_max_time(self):
+#         return self.weapon.value.SPEED * self.turn_length
 
-    def _get_colour(self):
-        return pygame.Color(*self.weapon.value.COLOUR)
+#     def _get_color(self):
+#         return pygame.Color(*self.weapon.value.COLOUR)
 
-    def resize(self, start: Tuple[int, int], end: Tuple[int, int]):
-        self.start, self.end = start, end
+#     def resize(self, start: Tuple[int, int], end: Tuple[int, int]):
+#         self.start, self.end = start, end
 
 
 class Trail:
@@ -101,16 +101,68 @@ class Trail:
         return pygame.Rect(x, y, 5, 5)
 
 
-class ActiveWeapons(Collection):
-    class_type = AnimatedWeapon
+# class ActiveWeapons(Collection):
+#     class_type = AnimatedWeapon
 
-    def draw(self, window):
+#     def draw(self, window):
+#         dirty_rects = []
+
+#         for e in self.all[:]:
+#             dirty_rects += e.draw(window)
+#             if e.timer.is_done():
+#                 dirty_rects.append(e.rect)
+#                 self.all.remove(e)
+
+#         return dirty_rects
+
+class ActiveWeaponSprite(pygame.sprite.Sprite):
+    __slots__ = ("start", "end", "rect", "event", "turn_length", "weapon",
+                 "timer", "trail")
+
+    def __init__(self, start: Tuple[int, int], end: Tuple[int, int],
+                 event: Dict, turn_length: int):
+        super().__init__()
+        self.start, self.end = start, end
+
+        self.rect = pygame.Rect(0, 0, 10, 10)
+        self.event = event
+        self.turn_length = turn_length
+        self.weapon = event["Weapon"]
+
+        self.timer = Timer(self.get_max_time())
+        self.trail = Trail(self._get_color())
+
+    def get_pos(self):
+        sx, sy = self.start
+        ex, ey = self.end
+
+        delta = self.timer.get_delta()
+
+        x = sx + (ex - sx) * delta
+        y = sy + (ey - sy) * delta
+
+        self.rect.center = x, y
+
+    def update(self, window):
         dirty_rects = []
 
-        for e in self.all[:]:
-            dirty_rects += e.draw(window)
-            if e.timer.is_done():
-                dirty_rects.append(e.rect)
-                self.all.remove(e)
+        if time.time() > self.timer.start_time:
+            dirty_rects.append(self.rect.copy())
+            dirty_rects.append(self.rect)
 
-        return dirty_rects
+            self.get_pos()
+            window.fill(self._get_color(), self.rect)
+            self.trail.draw(window, self.rect.center)
+
+        if self.timer.is_done():
+            self.kill()
+        # return dirty_rects
+
+    def get_max_time(self):
+        return self.weapon.value.SPEED * self.turn_length
+
+    def _get_color(self):
+        return pygame.Color(*self.weapon.value.COLOUR)
+
+    def resize(self, start: Tuple[int, int], end: Tuple[int, int]):
+        self.start, self.end = start, end
