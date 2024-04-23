@@ -35,7 +35,8 @@ class Countries:
     def get_pos(self, i):
         return self.all[i].border.center
 
-    def resize(self, WIDTH, HEIGHT):
+    def resize(self, SIZE):
+        WIDTH, HEIGHT = SIZE
         country_count = len(self.all)
 
         for i, c in enumerate(self.all):

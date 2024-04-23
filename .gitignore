@@ -8,3 +8,6 @@ venv/
 __pycache__
 
 game_sdl.py
+
+Pipfile
+Pipfile.lock

@@ -26,7 +26,7 @@ def is_less_than_ten_v3(x):
 # We can see that doing "x < 10" in-line is shorter than using our function, making it completely useless
 def is_less_than_ten_v4(x):
     # We can directly return the boolean value
-    return x < 10:
+    return x < 10
 
 
 """ 
@@ -99,7 +99,8 @@ def set_thermostat(temperature: int, time: datetime = datetime.now()):
     except TemperatureException:
         _change_temperature(20)
     except InvalidTimeException:
-        # _change_time(datetime.now())        
+        # _change_time(datetime.now())
+        ...        
 
 
 """

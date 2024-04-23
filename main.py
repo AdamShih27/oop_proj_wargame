@@ -1,21 +1,15 @@
-#!/usr/bin/python3
-
-from copy import deepcopy
-import sys
-import os
+#! /usr/bin/python3
 import pygame
-import random
 import time
-
 
 from resources.engine import Engine
 from resources.country import Country
 from resources.weapons import Weapons
 
-try:
-    from visualizer.optimize_dirty_rects import optimize_dirty_rects
-except ImportError:
-    optimize_dirty_rects = None
+# try:
+#     from visualizer.optimize_dirty_rects import optimize_dirty_rects
+# except ImportError:
+#     optimize_dirty_rects = None
 
 pygame.init()
 DEFAULT_FLAG = pygame.DOUBLEBUF | pygame.HWSURFACE | pygame.RESIZABLE
@@ -32,8 +26,8 @@ from visualizer.text_rect import TextRect
 
 
 BLACK = pygame.Color(0, 0, 0)
-GUI_COLOUR = pygame.Color(0, 180, 180)
 
+GUI_COLOUR = pygame.Color(0, 180, 180)
 
 nuclearIcon = pygame.image.load("images/nuclear.png").convert_alpha()
 pygame.display.set_icon(nuclearIcon)
@@ -42,10 +36,10 @@ TITLE_FONT = pygame.font.Font("fonts/FROSTBITE-Narrow Bold.ttf", 24)
 
 
 class Game:
-    BATCH = False
+    # BATCH = True
+    # frame = 0
     FPS = 60
     TURN_LENGTH = 0.2
-    frame = 0
 
     def __init__(self, window: pygame.Surface):
         self.end_game = None
@@ -61,11 +55,11 @@ class Game:
         self.shake = Shake()
         self.timer = time.time()
 
-        self.show_explosions = True
+        # self.show_explosions = True
         self.shake_enabled = True
-        self.dirty_rect_enabled = False
+        # self.dirty_rect_enabled = False
 
-        self.old_dirty_rects = []
+        # self.old_dirty_rects = []
 
         self.countries = Countries(self.game.countries.countries, SIZE)
 
@@ -76,37 +70,37 @@ class Game:
         self.turn_label = TextRect(TITLE_FONT, f"Round {self.game.turn}", GUI_COLOUR)
         self.turn_label.rect.topleft = (10, 10)
 
+        quit_game = lambda event: \
+            (event.type == pygame.QUIT) or \
+            (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE)
+            
+        toggle_fullscreen = lambda event: \
+            (event.type == pygame.KEYDOWN and event.key == pygame.K_F11)
+        
         while running:
             for event in pygame.event.get():
-                if Game.quit_game(event):
+                if quit_game(event):
                     running = False
                     pygame.quit()
                     return 1
-
-                elif Game.press_f11(event):
-                    self.toggle_fullscreen()
-
+                
+                elif toggle_fullscreen(event):
+                    self.fullscreen = not self.fullscreen
+                    pygame.display.toggle_fullscreen()
                 elif event.type == pygame.VIDEORESIZE:
                     SIZE = event.size
-                    pygame.display.set_mode(event.size, DEFAULT_FLAG)
-                    self.countries.resize(*event.size)
-
-            # Refresh screen
-            self.dirty_rects = []
-            self.refresh_screen = False
+                    pygame.display.set_mode(event.size, 
+                                            (DEFAULT_FLAG | pygame.FULLSCREEN) if self.fullscreen else DEFAULT_FLAG)
+                    self.countries.resize(event.size)
 
             self.window.fill(BLACK)
 
-            if self.show_explosions and not self.dirty_rect_enabled:
-                self.dirty_rects += self.explosions.draw(self.window)
-
-            self.dirty_rects += self.turn_label.draw(self.window)
-            self.dirty_rects += self.countries.draw(self.window)
-            self.lasers.draw(self.window, self.FPS)
-            self.dirty_rects += self.active_weapons.draw(self.window)
-
-            if not self.dirty_rect_enabled:
-                self.particles.draw(self.window, self.FPS)
+            self.explosions.draw(self.window)
+            self.turn_label.draw(self.window)
+            self.countries.draw(self.window)
+            self.lasers.draw(self.window)
+            self.active_weapons.draw(self.window)
+            self.particles.draw(self.window, self.FPS)
 
             if time.time() - self.timer > self.TURN_LENGTH * self.game.turn:
                 if not self.game.is_finished():
@@ -118,23 +112,13 @@ class Game:
                 elif not self.end_game:
                     self.end_game = time.time()
 
-                    if self.BATCH:
-                        self.end_game += 3
+                    # if self.BATCH:
+                    self.end_game += 3
 
-            if (not self.dirty_rect_enabled
-                and self.shake_enabled
-                and self.shake.is_active()):
-
+            if self.shake_enabled and self.shake.is_active():
                 self.shake.animate(self.window)
-                self.refresh_screen = True
 
-            if not self.dirty_rect_enabled or self.refresh_screen:
-                pygame.display.update()
-            else:
-                temp = optimize_dirty_rects(deepcopy(self.dirty_rects + self.old_dirty_rects))
-                pygame.display.update(temp)
-
-            self.old_dirty_rects = self.dirty_rects
+            pygame.display.update()
             self.clock.tick(self.FPS)
 
             if self.end_game and self.end_game < time.time():
@@ -143,14 +127,13 @@ class Game:
         if self.game.countries.get_alive_count():
             alive = self.game.countries.get_survivor()
             print(f"{alive} is the last one standing.")
-
         else:
             print("There were no survivors.")
 
-        if self.BATCH:
-            return 0
-        else:
-            return self._finish_game()
+        # if self.BATCH:
+        return 0
+        # else:
+        #     return self._finish_game()
 
     def animate_turn(self):
         for event in self.game.events["Player"]:
@@ -174,55 +157,36 @@ class Game:
             pos = self.countries.get_pos(event["Target"])
             self.explosions.add(pos, event["Weapon"])
 
-    def screenshot(self):
-        path = os.path.join("screenshots", str(Game.frame) + '.png')
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        pygame.image.save(self.window, path)
-        Game.frame += 1
+    # def screenshot(self):
+    #     path = os.path.join("screenshots", str(Game.frame) + '.png')
+    #     os.makedirs(os.path.dirname(path), exist_ok=True)
+    #     pygame.image.save(self.window, path)
+    #     Game.frame += 1
 
-    def _finish_game(self):
-        running = True
-        while running:
-            for event in pygame.event.get():
-                if Game.quit_game(event):
-                    running = False
-                    pygame.quit()
-                    return not Game.BATCH
+    # @staticmethod
+    # def press_f11(event):
+    #     return 
 
-                elif Game.press_f11(event):
-                    self.toggle_fullscreen()
+    # @staticmethod
+    # def quit_game(event):
+    #     return 
 
-            self.clock.tick(self.FPS)
+    # def toggle_fullscreen(self):
+    #     self.fullscreen = not self.fullscreen
 
-    @staticmethod
-    def press_f11(event):
-        return event.type == pygame.KEYUP and event.key == pygame.K_F11
+    #     if self.fullscreen:
+    #         flag = DEFAULT_FLAG | pygame.FULLSCREEN
 
-    @staticmethod
-    def quit_game(event):
-        return (event.type == pygame.QUIT
-                or (event.type == pygame.KEYUP
-                    and event.key == pygame.K_ESCAPE))
-
-    def toggle_fullscreen(self):
-        self.fullscreen = not self.fullscreen
-
-        if self.fullscreen:
-            flag = DEFAULT_FLAG | pygame.FULLSCREEN
-
-        pygame.display.set_mode(SIZE, flag)
+    #     pygame.display.set_mode(SIZE, flag)
 
 
 if __name__ == "__main__":
-    # Set this to True to watch many repeated conflicts
-    Game.BATCH = True
-
     # Print error messages if not in batch mode
-    Country.verbose = not Game.BATCH
+    Country.verbose = False
 
     while True:
-        active_game = Game(window)
-        player_quit = active_game.start()
+        game = Game(window)
+        player_quit = game.start()
 
         if player_quit:
             break

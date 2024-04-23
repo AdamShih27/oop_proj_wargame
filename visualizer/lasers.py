@@ -27,7 +27,7 @@ class Laser:
         self.dist = distance(source, target)
         self.angle = atan2(target[1] - source[1], target[0] - source[0])
 
-    def draw(self, window, FPS):
+    def draw(self, window):
         delta = self.timer.get_delta()
         full_rot = TAU / 60
 
@@ -48,8 +48,8 @@ class Laser:
 class Lasers(Collection):
     class_type = Laser
 
-    def draw(self, window, FPS):
+    def draw(self, window):
         for p in self.all[:]:
-            p.draw(window, FPS)
+            p.draw(window)
             if p.timer.is_done():
                 self.all.remove(p)
