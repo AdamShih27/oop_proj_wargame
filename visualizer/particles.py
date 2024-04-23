@@ -47,7 +47,7 @@ class Particles(Collection):
     class_type = Particle
 
     def add(self, pos):
-        for i in range(100):
+        for _ in range(100):
             self.all.append(Particle(pos))
 
     def draw(self, window, FPS):

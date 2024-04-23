@@ -6,15 +6,19 @@ from resources.engine import Engine
 from resources.country import Country
 from resources.weapons import Weapons
 
-# try:
-#     from visualizer.optimize_dirty_rects import optimize_dirty_rects
-# except ImportError:
-#     optimize_dirty_rects = None
+from collections import Counter
 
 pygame.init()
-DEFAULT_FLAG = pygame.DOUBLEBUF | pygame.HWSURFACE | pygame.RESIZABLE
-SIZE = (800, 600)
-window = pygame.display.set_mode(SIZE, DEFAULT_FLAG)
+
+from settings import *
+
+window_size = SIZE
+window = pygame.display.set_mode(window_size, DEFAULT_FLAG)
+
+pygame.display.set_caption(TITLE)
+pygame.display.set_icon(
+    pygame.image.load(ICON_PATH).convert_alpha()
+)
 
 from visualizer.weapons import ActiveWeapons
 from visualizer.countries import Countries
@@ -24,23 +28,7 @@ from visualizer.particles import Particles
 from visualizer.shake import Shake
 from visualizer.text_rect import TextRect
 
-
-BLACK = pygame.Color(0, 0, 0)
-
-GUI_COLOUR = pygame.Color(0, 180, 180)
-
-nuclearIcon = pygame.image.load("images/nuclear.png").convert_alpha()
-pygame.display.set_icon(nuclearIcon)
-
-TITLE_FONT = pygame.font.Font("fonts/FROSTBITE-Narrow Bold.ttf", 24)
-
-
 class Game:
-    # BATCH = True
-    # frame = 0
-    FPS = 60
-    TURN_LENGTH = 0.2
-
     def __init__(self, window: pygame.Surface):
         self.end_game = None
         self.fullscreen = False
@@ -55,19 +43,14 @@ class Game:
         self.shake = Shake()
         self.timer = time.time()
 
-        # self.show_explosions = True
         self.shake_enabled = True
-        # self.dirty_rect_enabled = False
 
-        # self.old_dirty_rects = []
-
-        self.countries = Countries(self.game.countries.countries, SIZE)
+        self.countries = Countries(self.game.countries.countries, window_size)
 
     def start(self):
-        global SIZE
+        global window_size
 
-        running = True
-        self.turn_label = TextRect(TITLE_FONT, f"Round {self.game.turn}", GUI_COLOUR)
+        self.turn_label = TextRect(TITLE_FONT, f"Round {self.game.turn}", GUI_COLOR)
         self.turn_label.rect.topleft = (10, 10)
 
         quit_game = lambda event: \
@@ -77,49 +60,46 @@ class Game:
         toggle_fullscreen = lambda event: \
             (event.type == pygame.KEYDOWN and event.key == pygame.K_F11)
         
-        while running:
+        while True:
             for event in pygame.event.get():
                 if quit_game(event):
-                    running = False
-                    pygame.quit()
-                    return 1
-                
+                    return None
                 elif toggle_fullscreen(event):
                     self.fullscreen = not self.fullscreen
                     pygame.display.toggle_fullscreen()
                 elif event.type == pygame.VIDEORESIZE:
-                    SIZE = event.size
+                    window_size = event.size
                     pygame.display.set_mode(event.size, 
                                             (DEFAULT_FLAG | pygame.FULLSCREEN) if self.fullscreen else DEFAULT_FLAG)
                     self.countries.resize(event.size)
 
-            self.window.fill(BLACK)
+            self.window.fill(BACKGROUND_COLOR)
 
             self.explosions.draw(self.window)
             self.turn_label.draw(self.window)
             self.countries.draw(self.window)
             self.lasers.draw(self.window)
             self.active_weapons.draw(self.window)
-            self.particles.draw(self.window, self.FPS)
-
-            if time.time() - self.timer > self.TURN_LENGTH * self.game.turn:
+            self.particles.draw(self.window, FPS)
+            
+            time_now = time.time()
+            
+            if time_now - self.timer > TURN_LENGTH:
                 if not self.game.is_finished():
                     self.game.do_turn()
                     self.game.print_events()
                     self.animate_turn()
                     self.turn_label.text = f"Round {self.game.turn}"
-
-                elif not self.end_game:
-                    self.end_game = time.time()
-
-                    # if self.BATCH:
-                    self.end_game += 3
+                elif self.end_game is None:
+                    self.end_game = time.time() + 3
+                
+                self.timer = time_now
 
             if self.shake_enabled and self.shake.is_active():
                 self.shake.animate(self.window)
 
             pygame.display.update()
-            self.clock.tick(self.FPS)
+            self.clock.tick(FPS)
 
             if self.end_game and self.end_game < time.time():
                 break
@@ -128,12 +108,11 @@ class Game:
             alive = self.game.countries.get_survivor()
             print(f"{alive} is the last one standing.")
         else:
+            alive = "No one"
             print("There were no survivors.")
-
-        # if self.BATCH:
-        return 0
-        # else:
-        #     return self._finish_game()
+        
+        print()
+        return alive
 
     def animate_turn(self):
         for event in self.game.events["Player"]:
@@ -142,9 +121,9 @@ class Game:
                 end_pos = self.countries.get_pos(event["Target"])
 
                 if event["Weapon"] == Weapons.LASER:
-                    self.lasers.add(start, end_pos, self.TURN_LENGTH)
+                    self.lasers.add(start, end_pos, TURN_LENGTH)
                 else:
-                    self.active_weapons.add(start, end_pos, event, self.TURN_LENGTH)
+                    self.active_weapons.add(start, end_pos, event, TURN_LENGTH)
 
         for event in self.game.events["Death"]:
             end_pos = self.countries.get_pos(event["Target"])
@@ -157,38 +136,30 @@ class Game:
             pos = self.countries.get_pos(event["Target"])
             self.explosions.add(pos, event["Weapon"])
 
-    # def screenshot(self):
-    #     path = os.path.join("screenshots", str(Game.frame) + '.png')
-    #     os.makedirs(os.path.dirname(path), exist_ok=True)
-    #     pygame.image.save(self.window, path)
-    #     Game.frame += 1
+def show_results(final):
+    size = sum(final.values())
+    print(f'{"Bot": <15} | {"Wins": <4} | {"Perc"}')
+    for bot, wins in final.most_common():
+        perc = f'{round(100 * wins / size)}%'
+        print(f'{bot: <15} | {wins: <4} | {perc}')
 
-    # @staticmethod
-    # def press_f11(event):
-    #     return 
-
-    # @staticmethod
-    # def quit_game(event):
-    #     return 
-
-    # def toggle_fullscreen(self):
-    #     self.fullscreen = not self.fullscreen
-
-    #     if self.fullscreen:
-    #         flag = DEFAULT_FLAG | pygame.FULLSCREEN
-
-    #     pygame.display.set_mode(SIZE, flag)
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     # Print error messages if not in batch mode
     Country.verbose = False
+    
+    results = Counter()
 
-    while True:
-        game = Game(window)
-        player_quit = game.start()
-
-        if player_quit:
+    for i in range(4):
+        print(f'Game {i + 1}')
+        print()
+        
+        survivor = Game(window).start()
+        
+        if survivor is None:
             break
+        
+        results[survivor] += 1
+        
+    show_results(results)
 
     pygame.quit()
