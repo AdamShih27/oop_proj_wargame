@@ -14,6 +14,24 @@ You will be responsible for developing the strategy your bot will use to conquer
 
 [Pygame](https://www.pygame.org/wiki/GettingStarted/) as our optional visualizer.
 
+## Getting started
+Using docker environment:
+```bash
+$ source docker_run.sh # get into docker env
+$ python3 main.py # start the game
+```
+
+In one step:
+```bash
+# get into docker env 
+# and run the main.py script automatically
+$ source docker_main.sh 
+```
+
+## Or build your own environment
+`poetry` or `virtualenv` is recommended.  
+The corresponding dependency list is provided (`pyproject.toml` and `requirements.txt`)
+
 <!-- 
 ## Syllabus
 
