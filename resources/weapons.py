@@ -31,10 +31,9 @@ Missile = Weapon(
     REVEAL_CHANCE = 0.25,
 )
 
-
 Nuke = Weapon(
     COLOUR = (255, 0, 0),
-    COST=30,
+    COST = 30,
     DAMAGE = 50,
     EXPLOSION_SIZE = 14,
     SPEED = 2,

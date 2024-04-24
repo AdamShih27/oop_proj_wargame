@@ -8,6 +8,8 @@ import os
 from resources.country import Country
 from resources import helpers
 
+from bots import ABCBot
+
 
 class Countries:
     __slots__ = 'countries',
@@ -122,9 +124,15 @@ def get_bots():
     for file in os.listdir(bots):
         if not file.endswith(".py"):
             continue
+        if file.startswith("__"):
+            continue
 
         name = file.replace(".py", "")
         module = "." + name
-        BOTS[name] = importlib.import_module(module, "bots").Bot
+        
+        bot = importlib.import_module(module, "bots").Bot
+        assert issubclass(bot, ABCBot)
+        
+        BOTS[name] = bot
 
     return BOTS

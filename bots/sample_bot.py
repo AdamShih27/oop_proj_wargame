@@ -2,8 +2,10 @@ from random import choice
 
 from resources.weapons import Weapons
 
+from bots import ABCBot
 
-class Bot:
+
+class Bot(ABCBot):
     """
     A bot to fire anything at anyone,
     Including itself..

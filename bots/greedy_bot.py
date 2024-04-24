@@ -1,9 +1,9 @@
 from random import choice
-
 from resources.weapons import Weapons
+from bots import ABCBot
 
 
-class Bot:
+class Bot(ABCBot):
     """
     An opportunist which tries to kill the person with the most nukes,
     Unfortunately that may be itself.

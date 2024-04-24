@@ -4,8 +4,10 @@ from typing import Dict, List
 
 from resources.weapons import Weapons
 
+from bots import ABCBot
 
-class Bot:
+
+class Bot(ABCBot):
     """
     If you fire a laser it will fire a laser
     If you nuke it- it'll try too..
