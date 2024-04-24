@@ -4,7 +4,7 @@
 .idea/
 .vscode/
 config
-venv/
+.venv/
 archive/
 __pycache__
 
@@ -12,3 +12,4 @@ game_sdl.py
 
 Pipfile
 Pipfile.lock
+poetry.lock

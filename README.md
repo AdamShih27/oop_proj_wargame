@@ -10,7 +10,7 @@ You will be responsible for developing the strategy your bot will use to conquer
 
 ## Tools and Technologies
 
-[Python 3.7+](https://www.python.org/downloads/) as the language of choice.
+[Python 3.10+](https://www.python.org/downloads/) as the language of choice.
 
 [Pygame](https://www.pygame.org/wiki/GettingStarted/) as our optional visualizer.
 
@@ -31,6 +31,16 @@ $ source docker_main.sh
 ## Or build your own environment
 `poetry` or `virtualenv` is recommended.  
 The corresponding dependency list is provided (`pyproject.toml` and `requirements.txt`)
+
+```bash
+$ poetry install 
+$ poetry run python main.py
+```
+
+```bash
+(.venv)$ pip install -r requirements.txt 
+(.venv)$ python main.py
+```
 
 <!-- 
 ## Syllabus
