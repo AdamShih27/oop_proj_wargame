@@ -41,13 +41,13 @@ class Game:
 
         self.game = Engine()
         self.clock = pygame.time.Clock()
+        self.shake = Shake()
+        self.timer = time.time()
+        
         # self.active_weapons = ActiveWeapons()
         # self.explosions = Explosions()
         # self.lasers = Lasers()
         # self.particles = Particles()
-        self.shake = Shake()
-        self.timer = time.time()
-        
         self.all_sprites = pygame.sprite.Group()
 
         self.shake_enabled = True
@@ -84,11 +84,11 @@ class Game:
 
             self.turn_label.draw(self.window)
             self.countries.draw(self.window)
+            
             # self.explosions.draw(self.window)
             # self.lasers.draw(self.window)
             # self.active_weapons.draw(self.window)
             # self.particles.draw(self.window)
-            
             self.all_sprites.update(self.window)
             
             time_now = time.time()
@@ -162,7 +162,7 @@ if __name__ == '__main__':
     
     results = Counter()
 
-    for i in range(4):
+    for i in range(NUM_ROUNDS):
         print(f'Game {i + 1}')
         print()
         

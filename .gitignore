@@ -5,6 +5,7 @@
 .vscode/
 config
 venv/
+archive/
 __pycache__
 
 game_sdl.py
