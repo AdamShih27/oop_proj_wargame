@@ -2,37 +2,6 @@
 import pygame
 import time
 
-from resources.engine import Engine
-from resources.country import Country
-from resources.weapons import Weapons
-
-from collections import Counter
-
-pygame.init()
-
-from settings import *
-
-window_size = SIZE
-window = pygame.display.set_mode(window_size, DEFAULT_FLAG)
-
-pygame.display.set_caption(TITLE)
-pygame.display.set_icon(
-    pygame.image.load(ICON_PATH).convert_alpha()
-)
-
-# from visualizer.weapons import ActiveWeapons
-# from visualizer.explosions import Explosions
-# from visualizer.lasers import Lasers
-# from visualizer.particles import Particles
-from visualizer.countries import Countries
-from visualizer.shake import Shake
-from visualizer.text_rect import TextRect
-
-from visualizer.weapons import ActiveWeaponSprite
-from visualizer.explosions import ExplosionSprite
-from visualizer.lasers import LaserSprite
-from visualizer.particles import ParticlesSprite
-
 class Game:
     def __init__(self, window: pygame.Surface):
         self.end_game = None
@@ -44,10 +13,6 @@ class Game:
         self.shake = Shake()
         self.timer = time.time()
         
-        # self.active_weapons = ActiveWeapons()
-        # self.explosions = Explosions()
-        # self.lasers = Lasers()
-        # self.particles = Particles()
         self.all_sprites = pygame.sprite.Group()
 
         self.shake_enabled = True
@@ -84,11 +49,6 @@ class Game:
 
             self.turn_label.draw(self.window)
             self.countries.draw(self.window)
-            
-            # self.explosions.draw(self.window)
-            # self.lasers.draw(self.window)
-            # self.active_weapons.draw(self.window)
-            # self.particles.draw(self.window)
             self.all_sprites.update(self.window)
             
             time_now = time.time()
@@ -139,7 +99,7 @@ class Game:
         for event in self.game.events["Death"]:
             end_pos = self.countries.get_pos(event["Target"])
             # self.particles.add(end_pos)
-            self.all_sprites.add(ParticlesSprite(end_pos) for _ in range(100))
+            self.all_sprites.add(ParticleSprite(end_pos) for _ in range(100))
 
         for event in self.game.events["Hit"]:
             if event["Weapon"] == Weapons.NUKE:
@@ -156,7 +116,36 @@ def show_results(final):
         perc = f'{round(100 * wins / size)}%'
         print(f'{bot: <15} | {wins: <4} | {perc}')
 
-if __name__ == '__main__':
+# check if the script is being run directly (i.e. python main.py) and not imported
+if __name__ == '__main__': 
+    from resources.engine import Engine
+    from resources.country import Country
+    from resources.weapons import Weapons
+
+    from collections import Counter
+
+    pygame.init()
+
+    from settings import *
+
+    global window_size
+    window_size = SIZE
+    window = pygame.display.set_mode(window_size, DEFAULT_FLAG)
+
+    pygame.display.set_caption(TITLE)
+    pygame.display.set_icon(
+        pygame.image.load(ICON_PATH).convert_alpha()
+    )
+
+    from visualizer.countries import Countries
+    from visualizer.shake import Shake
+    from visualizer.text_rect import TextRect
+
+    from visualizer.weapons import ActiveWeaponSprite
+    from visualizer.explosions import ExplosionSprite
+    from visualizer.lasers import LaserSprite
+    from visualizer.particles import ParticleSprite
+
     # Print error messages if not in batch mode
     Country.verbose = False
     

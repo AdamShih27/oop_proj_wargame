@@ -63,7 +63,7 @@ TAU = 2 * pi
 
 #         return dirty_rects
     
-class ParticlesSprite(pygame.sprite.Sprite):
+class ParticleSprite(pygame.sprite.Sprite):
     def __init__(self, pos: Tuple[int, int]):
         super().__init__()
         

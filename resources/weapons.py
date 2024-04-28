@@ -40,6 +40,7 @@ Nuke = Weapon(
     REVEAL_CHANCE = 1,
 )
 
+# You can define your own weapons here.
 
 @unique
 class Weapons(Enum):
