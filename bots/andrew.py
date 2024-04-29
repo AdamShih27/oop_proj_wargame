@@ -3,8 +3,10 @@ from random import choice
 from resources.weapons import Weapons
 from resources.helpers import get_distance
 
+from bots import ABCBot
 
-class Bot:
+
+class Bot(ABCBot):
     """
     A bot to fire anything at anyone but itself
     """
@@ -51,7 +53,3 @@ class Bot:
             "Weapon": weapon,
             "Type": "Attack"
         }
-
-    @staticmethod
-    def has_nukes(country_status: dict):
-        return country_status["Nukes"] > 0

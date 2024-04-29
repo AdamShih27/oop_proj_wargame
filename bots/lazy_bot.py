@@ -2,8 +2,10 @@ from random import choice, randint
 
 from resources.weapons import Weapons
 
+from bots import ABCBot
 
-class Bot:
+
+class Bot(ABCBot):
     """
     It fires, sometimes.
     """
@@ -37,7 +39,3 @@ class Bot:
             }
 
         return {}
-
-    @staticmethod
-    def has_nukes(country_status: dict):
-        return country_status["Nukes"] > 0

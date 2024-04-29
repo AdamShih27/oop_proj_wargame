@@ -5,8 +5,9 @@ from typing import Dict
 from resources.weapons import Weapons
 from resources.helpers import mydeepcopy
 
+from bots import ABCBot
 
-class Bot:
+class Bot(ABCBot):
     """
     Attack the healthiest bot in the future
     Use the nuke as soon as possible (so people don't try to steal it)
@@ -92,10 +93,6 @@ class Bot:
                 break
 
         return i
-
-    @staticmethod
-    def has_nukes(country_status: Dict):
-        return country_status["Nukes"] > 0
 
     @staticmethod
     def simulate(own_id: int, world_state: Dict):

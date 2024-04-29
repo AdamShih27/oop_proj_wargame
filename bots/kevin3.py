@@ -1,7 +1,9 @@
 from resources.weapons import Weapons
 from random import choice
+from bots import ABCBot
 
-class Bot:
+
+class Bot(ABCBot):
     """
     Use the nuke as soon as possible
     """
@@ -45,7 +47,3 @@ class Bot:
             "Target": target,
             "Type": "Attack",
         }
-
-    @staticmethod
-    def has_nukes(country_status: dict):
-        return country_status["Nukes"] > 0

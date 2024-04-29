@@ -1,5 +1,6 @@
 # WarGame Competition
-Our goal is to make bots that compete in a halo-inspired global war game using Python! You will be responsible for developing the strategy your bot will use to conquer the battlefield.
+Our goal is to make bots that compete in a halo-inspired global war game using Python!   
+You will be responsible for developing the strategy your bot will use to conquer the battlefield.
 
 ## Learning Objectives
 
@@ -9,11 +10,39 @@ Our goal is to make bots that compete in a halo-inspired global war game using P
 
 ## Tools and Technologies
 
-[Python 3.7](https://www.python.org/downloads/) as the language of choice.
+[Python 3.10+](https://www.python.org/downloads/) as the language of choice.
 
 [Pygame](https://www.pygame.org/wiki/GettingStarted/) as our optional visualizer.
 
+## Getting started
+Using docker environment:
+```bash
+$ source docker_run.sh # get into docker env
+$ python3 main.py # start the game
+```
 
+In one step:
+```bash
+# get into docker env 
+# and run the main.py script automatically
+$ source docker_main.sh 
+```
+
+## Or build your own environment
+`poetry` or `virtualenv` is recommended.  
+The corresponding dependency list is provided (`pyproject.toml` and `requirements.txt`)
+
+```bash
+$ poetry install 
+$ poetry run python main.py
+```
+
+```bash
+(.venv)$ pip install -r requirements.txt 
+(.venv)$ python main.py
+```
+
+<!-- 
 ## Syllabus
 
 Lesson # | Date | Description | Concepts
@@ -30,4 +59,4 @@ Lesson # | Date | Description | Concepts
 [Lesson 3](https://docs.google.com/presentation/d/1CslDZL3zKSSPdAtuBK5iUMjb-nK2OC1ePPM_Rw2MWgw/edit?usp=sharing)
 [Lesson 4](https://docs.google.com/presentation/d/1eMIE0a4weWAomdNxL5m2OTbsJvZnM9ipPbpzZFquS8o/edit?usp=sharing)
 
-Feel free to check F19/Projects/WarGame readme for extra material.
+Feel free to check F19/Projects/WarGame readme for extra material. -->

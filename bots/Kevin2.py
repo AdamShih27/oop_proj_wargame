@@ -2,8 +2,9 @@ from random import choice
 
 from resources.weapons import Weapons
 
+from bots import ABCBot
 
-class Bot:
+class Bot(ABCBot):
     """
     A bot to fire anything at anyone but itself
     """
@@ -34,6 +35,3 @@ class Bot:
             "Target": target,
             "Type": "Attack",
         }
-
-    def has_nukes(self, country_status: dict):
-        return country_status["Nukes"] > 0

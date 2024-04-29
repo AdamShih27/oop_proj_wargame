@@ -1,8 +1,10 @@
 from random import choice
 
 from resources.weapons import Weapons
+from bots import ABCBot
 
-class Bot:
+
+class Bot(ABCBot):
     def action(self, country_status: dict, world_state: dict):
         weapon_choices = list(Weapons)
 
@@ -11,17 +13,9 @@ class Bot:
 
         target_more_choices = []
 
-
-
-
-
         for i in target_choices:
             if world_state["countries"][i]["Health"] <= 90:
                 target_more_choices.append(i)
-
-
-
-
 
         weapon = choice([Weapons.MISSILE, Weapons.LASER])
         target = choice(target_more_choices)
