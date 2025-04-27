@@ -25,10 +25,10 @@ Laser = Weapon(
 Missile = Weapon(
     COLOUR = (0, 192, 0),
     COST = 10,
-    DAMAGE = 15,
+    DAMAGE = 12,
     EXPLOSION_SIZE = 5,
     SPEED = 2,
-    REVEAL_CHANCE = 0.25,
+    REVEAL_CHANCE = 0.5,
 )
 
 Nuke = Weapon(
